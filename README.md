@@ -1,6 +1,4 @@
-```
-  This is exactly what it looks like, some one shot vibed tool to help me do some bulk recording from my HDHomeRun tuner. I have not read the code, but I have used it a decent amount. It's just a basic tool that does what it says on the tin.
-```
+> This is exactly what it looks like, some one shot vibed tool to help me do some bulk recording from my HDHomeRun tuner. I have not read the code, but I have used it a decent amount. It's just a basic tool that does what it says on the tin.
 
 # hdrec
 
