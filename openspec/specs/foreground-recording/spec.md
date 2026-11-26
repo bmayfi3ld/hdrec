@@ -1,7 +1,9 @@
+# foreground-recording Specification
+
 ## Purpose
 Enable reliable foreground capture from a selected local HDHomeRun with observable recovery and unambiguous output files.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Select a known device and channel
 The CLI SHALL provide devices and channels as tables or JSON arrays, preserve channel numbers as strings, and select by --device, then HDREC_DEVICE, then local discovery.
@@ -15,11 +17,11 @@ The CLI SHALL provide devices and channels as tables or JSON arrays, preserve ch
 - **THEN** report the problem without substituting another device or channel.
 
 ### Requirement: Capture until interrupted
-The recorder SHALL begin acquisition immediately, never overwrite prior output, and rotate parts approximately every 15 minutes without releasing the tuner.
+The recorder SHALL begin acquisition immediately, never overwrite prior output, and write one recording file per uninterrupted stretch of reception, regardless of duration.
 
-#### Scenario: Normal rotation
-- **WHEN** the rotation interval expires
-- **THEN** finalize the active .ts.partial as .ts and start the next numbered part on the same connection.
+#### Scenario: Long uninterrupted recording
+- **WHEN** reception continues uninterrupted for eight hours and the user presses Ctrl-C
+- **THEN** finalize the single active `.ts.partial` as one `.ts` file without creating another part.
 
 #### Scenario: Host cannot inhibit idle sleep
 - **WHEN** inhibition is unavailable during a session
@@ -46,6 +48,10 @@ The CLI SHALL present lifecycle events above one width-aware live terminal line 
 #### Scenario: Terminal becomes narrow
 - **WHEN** available columns shrink
 - **THEN** shorten the live line, dropping secondary metrics first; ordinary event lines remain in terminal scrollback.
+
+#### Scenario: Live output is blocked
+- **WHEN** the terminal or JSON consumer stops accepting output
+- **THEN** capture SHALL continue without waiting for live output. Live events and metrics MAY be skipped under backpressure; the session's `session.ndjson` SHALL retain lifecycle events and the final outcome independently. A resumed terminal SHALL show current metrics rather than replay stale snapshots.
 
 ### Requirement: Account for shutdown and loss
 The recorder SHALL honor Ctrl-C and SIGTERM during capture, waits and backoff, release the tuner and inhibitor, finalize writable output, and report totals, directory, reason, receiving time and unavailable time.
